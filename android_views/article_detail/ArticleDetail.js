@@ -11,13 +11,15 @@ import {
   Subtitle,
   Caption,
   RichMedia,
+  Icon,
+  Button,
 } from '@shoutem/ui';
 
 import { getRequest } from './../common/util';
 import { baseURL } from './../common/constant';
 
 const styles = {
-  commentItemContainer: {
+  commentItem: {
     marginVertical: 6,
   },
 };
@@ -30,7 +32,7 @@ class ArticleDetail extends Component {
   }
 
   getArticleDetailData=() => {
-    const { params } = this.props.navigation.state;
+    const { params={} } = this.props.navigation.state;
     const id = params.id;
     alert(id);
     this.setState({
@@ -50,10 +52,9 @@ class ArticleDetail extends Component {
   }
 
   getPopularComment=() => {
-    const { params } = this.props.navigation.state;
+    const { params={} } = this.props.navigation.state;
     const id = params.id;
     getRequest(`${baseURL}post/${id}/popular_comments`, (responseData) => {
-      console.log(responseData);
       this.setState({
         popularCommentsData: responseData.comments,
       });
@@ -77,7 +78,7 @@ class ArticleDetail extends Component {
       created_time,
     } = item;
     return (
-      <Row style={styles.commentItemContainer}>
+      <Row style={styles.commentItem}>
         <Image
           styleName='small-avatar top'
           source={{ uri: avatar }}
@@ -93,6 +94,31 @@ class ArticleDetail extends Component {
     );
   }
 
+  renderHeader=() => {
+    return (
+      <Row>
+        <Icon name="comment" />
+        <Text numberOfLines={1}>热门评论</Text>
+      </Row>
+    )
+  }
+
+  renderFooter=() => {
+    return (
+      <Button onPress={this.showComments}>
+        <Text>查看更多评论</Text>
+      </Button>
+    )
+  }
+
+  showComments=() => {
+    const { params } = this.props.navigation.state;
+    const id = params.id;
+    alert(id);
+    const { navigate } = this.props.navigation;
+    navigate('Comments', { id });
+  }
+
   render() {
     const {
       loading,
@@ -103,7 +129,6 @@ class ArticleDetail extends Component {
       popularCommentsData = [],
     } = this.state;
     let _content = content;
-    console.log(popularCommentsData);
     photos.forEach((item = {}, index) => {
       const {
         tag_name,
@@ -120,15 +145,12 @@ class ArticleDetail extends Component {
         {
           loading ?
             <Spinner /> :
-            <View>
-              <Row>
-                <Text numberOfLines={1}>热门评论</Text>
-              </Row>
-              <ListView
-                data={popularCommentsData}
-                renderRow={this.renderRow}
-              />
-            </View>
+            <ListView
+              data={popularCommentsData}
+              renderRow={this.renderRow}
+              renderHeader={this.renderHeader}
+              renderFooter={this.renderFooter}
+            />
         }
       </Screen>
     );

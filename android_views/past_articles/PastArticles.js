@@ -1,14 +1,22 @@
 import React, { Component } from 'react';
 import {
   Text,
-  Button
+  Button,
+  Icon,
 } from '@shoutem/ui';
 
+const styles = {
+  menuIcon: {
+    marginLeft: 20,
+  },
+};
+
 class PastArticles extends Component {
-  static navigationOptions = {
+  static navigationOptions = ({ navigation }) => ({
     title: '往期文章',
     drawerLabel: '往期文章',
-  }
+    headerLeft: <Icon name='sidebar' style={styles.menuIcon} onPress={() => { navigation.navigate('DrawerOpen'); }} />,
+  })
 
   render() {
     return (

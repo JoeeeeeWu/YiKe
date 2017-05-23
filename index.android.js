@@ -9,12 +9,12 @@ import {
   AppRegistry,
 } from 'react-native';
 
-import APP from './android_views/app/APP';
+import AppNav from './android_views/navigation/AppNav';
 
 class YiKe extends Component {
   render() {
     return (
-      <APP />
+      <AppNav />
     );
   }
 }

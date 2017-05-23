@@ -12,6 +12,7 @@ import {
   Title,
   TouchableOpacity,
   Caption,
+  Icon,
 } from '@shoutem/ui';
 
 import { getRequest, getTodayStr } from './../common/util';
@@ -21,13 +22,17 @@ const styles = {
   articleItemContainer: {
     marginVertical: 10,
   },
+  menuIcon: {
+    marginLeft: 20,
+  },
 };
 
 class NewArticles extends Component {
-  static navigationOptions = {
+  static navigationOptions = ({ navigation }) => ({
     title: '今日一刻',
     drawerLabel: '今日一刻',
-  }
+    headerLeft: <Icon name='sidebar' style={styles.menuIcon} onPress={() => { navigation.navigate('DrawerOpen'); }} />,
+  })
 
   state={
     loading: false,
