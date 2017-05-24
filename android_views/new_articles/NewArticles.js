@@ -1,8 +1,5 @@
 import React, { Component } from 'react';
 import {
-  StyleSheet,
-} from 'react-native';
-import {
   Text,
   View,
   Screen,
@@ -25,6 +22,12 @@ const styles = {
   menuIcon: {
     marginLeft: 20,
   },
+  noMore: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginVertical: 8,
+  },
 };
 
 class NewArticles extends Component {
@@ -35,7 +38,7 @@ class NewArticles extends Component {
   })
 
   state={
-    loading: false,
+    loading: true,
     newArticlesData: [],
   }
 
@@ -44,9 +47,6 @@ class NewArticles extends Component {
   }
 
   getNewArticlesData=() => {
-    this.setState({
-      loading: true,
-    });
     getRequest(`${baseURL}stream/date/${getTodayStr()}`, (respnseData) => {
       const {
         posts,
@@ -97,8 +97,16 @@ class NewArticles extends Component {
           </View>
         </Tile>
       </TouchableOpacity>
-    )
+    );
   }
+
+  renderFooter=() => (
+    this.state.loading ?
+    null :
+    <View style={styles.noMore}>
+      <Text>—— 别扯了，已经没有更多了 ——</Text>
+    </View>
+  )
 
   render() {
     const {
@@ -110,6 +118,7 @@ class NewArticles extends Component {
         <ListView
           data={newArticlesData}
           renderRow={this.renderRow}
+          renderFooter={this.renderFooter}
           loading={loading}
         />
       </Screen>
