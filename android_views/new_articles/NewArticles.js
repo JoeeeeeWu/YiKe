@@ -9,33 +9,19 @@ import {
   Title,
   TouchableOpacity,
   Caption,
-  Icon,
 } from '@shoutem/ui';
+import NoMore from './../common/NoMore';
 
 import { getRequest, getTodayStr } from './../common/util';
 import { baseURL } from './../common/constant';
 
 const styles = {
   articleItemContainer: {
-    marginVertical: 10,
-  },
-  menuIcon: {
-    marginLeft: 20,
-  },
-  noMore: {
-    flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginVertical: 8,
+    marginBottom: 14,
   },
 };
 
 class NewArticles extends Component {
-  static navigationOptions = ({ navigation }) => ({
-    title: '今日一刻',
-    drawerLabel: '今日一刻',
-    headerLeft: <Icon name='sidebar' style={styles.menuIcon} onPress={() => { navigation.navigate('DrawerOpen'); }} />,
-  })
 
   state={
     loading: true,
@@ -73,26 +59,32 @@ class NewArticles extends Component {
       title,
       abstract,
       id,
+      published_time,
+      comments_count,
     } = item;
     return (
       <TouchableOpacity
+        style={styles.articleItemContainer}
         onPress={() => {
           const { navigate } = this.props.navigation;
           navigate('ArticleDetail', { id });
         }}
-        style={styles.articleItemContainer}
       >
         <Tile>
-          <Image
-            styleName='large-banner'
-            source={{ uri: url }}
-          />
+          {
+            url ?
+              <Image
+                styleName='large-banner'
+                source={{ uri: url }}
+              /> :
+              null
+          }
           <View styleName='content'>
             <Title>{title}</Title>
             <Text>{abstract}</Text>
             <View styleName='horizontal space-between'>
-              <Caption>1 hour ago</Caption>
-              <Caption>15:34</Caption>
+              <Caption>{published_time.slice(0, 16)}</Caption>
+              <Caption>{`${comments_count}条评论`}</Caption>
             </View>
           </View>
         </Tile>
@@ -103,9 +95,7 @@ class NewArticles extends Component {
   renderFooter=() => (
     this.state.loading ?
     null :
-    <View style={styles.noMore}>
-      <Text>—— 别扯了，已经没有更多了 ——</Text>
-    </View>
+    <NoMore />
   )
 
   render() {

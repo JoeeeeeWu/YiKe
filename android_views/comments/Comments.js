@@ -19,45 +19,47 @@ import { baseURL } from './../common/constant';
 
 const styles = {
   commentItem: {
-    marginVertical: 6,
+    marginBottom: 8,
   },
   refCommentItem: {
-      backgroundColor: '#eee',
-  }
+    backgroundColor: '#eee',
+  },
+  commentHeader: {
+    marginBottom: 8,
+  },
 };
 
 class Comments extends Component {
-    state={
-        commentsData: [],
-        maxId: 0,
-        loading: true,
-    }
+  state={
+    commentsData: [],
+    maxId: 0,
+    loading: true,
+  }
 
-    componentWillMount=() => {
-        this.getCommentsData();
-    }
+  componentWillMount=() => {
+    this.getCommentsData();
+  }
 
-    getCommentsData=() => {
-        const {
-            maxId
-        }=this.state;
-        const { params } = this.props.navigation.state;
-        const id = params.id;
-        getRequest(`${baseURL}post/${id}/comments?count=10&max_id=${maxId}`, (respnseData) => {
-            console.log(respnseData);
-            this.setState({
-                loading: false,
-                commentsData: respnseData.comments,
-            });
-        }, (error) => {
-            this.setState({
-                loading: false,
-            });
-            alert(error);
-        });
-    }
+  getCommentsData=() => {
+    const {
+        maxId,
+    } = this.state;
+    const { params } = this.props.navigation.state;
+    const id = params.id;
+    getRequest(`${baseURL}post/${id}/comments?count=10&max_id=${maxId}`, (respnseData) => {
+      this.setState({
+        loading: false,
+        commentsData: respnseData.comments,
+      });
+    }, (error) => {
+      this.setState({
+        loading: false,
+      });
+      alert(error);
+    });
+  }
 
-    renderRow=(item = {}) => {
+  renderRow=(item = {}) => {
     const {
       author: {
         name,
@@ -68,14 +70,11 @@ class Comments extends Component {
       ref_comment,
       ref_comment: {
         author: {
-            avatar: ref_avatar,
             name: ref_name,
-        }={},
+        } = {},
         content: ref_content,
-        created_time: ref_created_time,
-      }={},
+      } = {},
     } = item;
-    console.log(item);
     return (
       <Row style={styles.commentItem}>
         <Image
@@ -85,48 +84,35 @@ class Comments extends Component {
         <View styleName='vertical'>
           <View styleName='horizontal space-between'>
             <Subtitle styleName=''>{name}</Subtitle>
-            <Caption>{created_time}</Caption>
+            <Caption>{ created_time.slice(0, 16) }</Caption>
           </View>
           {
               ref_comment ?
-              <Row style={styles.refCommentItem}>
-                <View>
-                    <Subtitle styleName=''>{ref_name}</Subtitle>
-                    <Text styleName='multiline'>{ref_content}</Text>
-                </View>
-              </Row> :
-            null
-
+                <Row style={styles.refCommentItem}>
+                  <View>
+                    <Subtitle styleName=''>{ ref_name }</Subtitle>
+                    <Text styleName='multiline'>{ ref_content }</Text>
+                  </View>
+                </Row> :
+              null
           }
-
           <Text styleName='multiline'>{content}</Text>
         </View>
       </Row>
     );
   }
 
-  renderHeader=() => {
+  render() {
+    const {
+        commentsData,
+    } = this.state;
     return (
-      <Row>
-        <Icon name="comment" />
-        <Text numberOfLines={1}>评论</Text>
-      </Row>
-    )
+      <ListView
+        data={commentsData}
+        renderRow={this.renderRow}
+      />
+    );
   }
-
-    render() {
-        const {
-            commentsData,
-        }=this.state;
-        console.log(commentsData);
-        return (
-            <ListView 
-                data={commentsData}
-                renderRow={this.renderRow}
-                renderHeader={this.renderHeader}
-            />
-        )
-    }
 }
 
 export default Comments;

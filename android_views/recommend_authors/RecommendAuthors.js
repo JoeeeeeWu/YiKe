@@ -10,17 +10,14 @@ import {
   Image,
   View,
   Icon,
-  Divider,
+  TouchableOpacity,
 } from '@shoutem/ui';
+import NoMore from './../common/NoMore';
 
 import { getRequest } from './../common/util';
 import { baseURL } from './../common/constant';
 
 class RecommendAuthors extends Component {
-
-  static navigationOptions = {
-    tabBarLabel: '推荐作者',
-  }
 
   state={
     loading: true,
@@ -51,25 +48,39 @@ class RecommendAuthors extends Component {
   renderRow=(item = {}) => {
     const {
       avatar,
+      large_avatar,
       name,
       editor_notes,
+      id,
+      resume,
     } = item;
     return (
-      <Row styleName='small'>
-        <Image
-          styleName='small-avatar'
-          source={{ uri: avatar }}
-        />
-        <View styleName='vertical'>
-          <Subtitle>{ name }</Subtitle>
-          <Text numberOfLines={1}>{ editor_notes }</Text>
-        </View>
-        <Icon styleName='disclosure' name='right-arrow' />
-      </Row>
+      <TouchableOpacity
+        onPress={() => {
+          const { navigate } = this.props.navigation;
+          navigate('AuthorHome', { id, name, resume, large_avatar });
+        }}
+      >
+        <Row styleName='small'>
+          <Image
+            styleName='small-avatar'
+            source={{ uri: avatar }}
+          />
+          <View styleName='vertical'>
+            <Subtitle>{ name }</Subtitle>
+            <Text numberOfLines={1}>{ editor_notes }</Text>
+          </View>
+          <Icon styleName='disclosure' name='right-arrow' />
+        </Row>
+      </TouchableOpacity>
     );
   }
 
-  renderSeparator=() => <Divider styleName='line' />
+  renderFooter=() => (
+    this.state.loading ?
+    null :
+    <NoMore />
+  )
 
   render() {
     const {
@@ -81,7 +92,7 @@ class RecommendAuthors extends Component {
         <ListView
           data={recommendAuthorsData}
           renderRow={this.renderRow}
-          renderSeparator={this.renderSeparator}
+          renderFooter={this.renderFooter}
           loading={loading}
         />
       </Screen>

@@ -16,18 +16,12 @@ import { getRequest, getTodayStr } from './../common/util';
 import { baseURL } from './../common/constant';
 
 const styles = {
-  menuIcon: {
-    marginLeft: 20,
+  articleItemContainer: {
+    marginBottom: 14,
   },
 };
 
 class PastArticles extends Component {
-
-  static navigationOptions = ({ navigation }) => ({
-    title: '往期文章',
-    drawerLabel: '往期文章',
-    headerLeft: <Icon name='sidebar' style={styles.menuIcon} onPress={() => { navigation.navigate('DrawerOpen'); }} />,
-  })
 
   state={
     loading: true,
@@ -69,6 +63,8 @@ class PastArticles extends Component {
       title,
       abstract,
       id,
+      published_time,
+      comments_count,
     } = item;
     return (
       <TouchableOpacity
@@ -79,16 +75,20 @@ class PastArticles extends Component {
         style={styles.articleItemContainer}
       >
         <Tile>
-          <Image
-            styleName='large-banner'
-            source={{ uri: url }}
-          />
+          {
+            url ?
+              <Image
+                styleName='large-banner'
+                source={{ uri: url }}
+              /> :
+              null
+          }
           <View styleName='content'>
             <Title>{title}</Title>
             <Text>{abstract}</Text>
             <View styleName='horizontal space-between'>
-              <Caption>1 hour ago</Caption>
-              <Caption>15:34</Caption>
+              <Caption>{published_time.slice(0, 16)}</Caption>
+              <Caption>{`${comments_count}条评论`}</Caption>
             </View>
           </View>
         </Tile>

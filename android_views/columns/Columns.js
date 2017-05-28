@@ -3,27 +3,79 @@ import {
   Text,
   Button,
   Icon,
+  ListView,
+  Tile,
+  Overlay,
+  Title,
+  Heading,
+  TouchableOpacity,
+  GridRow,
+  Subtitle,
 } from '@shoutem/ui';
 
-const styles = {
-  menuIcon: {
-    marginLeft: 20,
-  },
-};
+import { getRequest } from './../common/util';
+import { baseURL } from './../common/constant';
 
 class Columns extends Component {
-  static navigationOptions = ({ navigation }) => ({
-    title: '栏目',
-    drawerLabel: '栏目',
-    headerLeft: <Icon name='sidebar' style={styles.menuIcon} onPress={() => { navigation.navigate('DrawerOpen'); }} />,
-  })
+
+  state={
+    columnsData: [],
+  }
+
+  componentWillMount=() => {
+    this.getColumnsData();
+  }
+
+  getColumnsData=() => {
+    getRequest(`${baseURL}columns`, (respnseData = {}) => {
+      this.setState({
+        columnsData: respnseData.columns,
+      });
+    }, (error) => {
+      alert(error);
+    });
+  }
+
+  renderRow=(rowData, sectionId, index) => {
+    const cellViews = rowData.map((item = {}, id) => {
+      const {
+        name,
+        description,
+        id: columnId,
+      } = item;
+      return (
+        <TouchableOpacity
+          key={id}
+          styleName='flexible'
+          onPress={() => {
+            const { navigate } = this.props.navigation;
+            navigate('ColumnArticles', { name, description, id: columnId });
+          }}
+        >
+          <Tile styleName='flexible text-centric'>
+            <Overlay><Subtitle>{name}</Subtitle></Overlay>
+            <Subtitle styleName='md-gutter-top'>{description}</Subtitle>
+          </Tile>
+        </TouchableOpacity>
+      )
+    });
+    return (
+      <GridRow columns={2}>
+        {cellViews}
+      </GridRow>
+    );
+  }
 
   render() {
+    const {
+      columnsData,
+    } = this.state;
+    const groupedData = GridRow.groupByRows(columnsData, 2);
     return (
-      <Button
-        onPress={() => {
-          this.props.navigation.navigate('DrawerOpen')
-        }}><Text>CHECK IN HERE</Text></Button>
+      <ListView
+        data={groupedData}
+        renderRow={this.renderRow}
+      />
     );
   }
 }
