@@ -9,7 +9,6 @@ import {
   Title,
   TouchableOpacity,
   Caption,
-  Icon,
 } from '@shoutem/ui';
 
 import { getRequest, getTodayStr } from './../common/util';
@@ -33,16 +32,17 @@ class PastArticles extends Component {
     this.getPastArticleData();
   }
 
-  getPastArticleData=() => {
-    const {
-      preDay,
-    } = this.state;
+  getPastArticleData=(preDay = 1, pastArticlesData = []) => {
+    this.setState({
+      loading: true,
+    });
     getRequest(`${baseURL}stream/date/${getTodayStr(preDay)}`, (respnseData) => {
       const {
         posts,
       } = respnseData;
       this.setState({
-        pastArticlesData: posts,
+        pastArticlesData: pastArticlesData.concat(posts),
+        preDay: preDay + 1,
         loading: false,
       });
     }, (error) => {
@@ -96,6 +96,28 @@ class PastArticles extends Component {
     );
   }
 
+  onRefresh=() => {
+    this.getPastArticleData();
+  }
+
+  onLoadMore=() => {
+    const {
+      preDay,
+      pastArticlesData,
+    } = this.state;
+    this.getPastArticleData(preDay, pastArticlesData);
+  }
+
+  renderSectionHeader=() => {
+    const {
+      preDay,
+    } = this.state;
+    const header = getTodayStr(preDay);
+    return (
+      <Text>{header}</Text>
+    );
+  }
+
   render() {
     const {
       pastArticlesData,
@@ -104,9 +126,11 @@ class PastArticles extends Component {
     return (
       <Screen>
         <ListView
+          loading={loading}
           data={pastArticlesData}
           renderRow={this.renderRow}
-          loading={loading}
+          onRefresh={this.onRefresh}
+          onLoadMore={this.onLoadMore}
         />
       </Screen>
     );

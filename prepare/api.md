@@ -5,7 +5,7 @@
 | API名称 | API接口 |
 | :------:| :------: |
 | 栏目总览 | https://moment.douban.com/api/columns |
-| 栏目文章列表及翻页 | https://moment.douban.com/api/column/{columnId}/posts?max_id={maxId} |
+| 栏目文章列表及翻页 | https://moment.douban.com/api/column/{columnId}/posts?count={20}&max_id={maxId} |
 
 ## 二、作者接口
 

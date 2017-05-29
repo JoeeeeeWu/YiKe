@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import {
   Text,
-  Button,
   TouchableOpacity,
   Row,
   Image,
@@ -14,9 +13,16 @@ import {
 import { getRequest } from './../common/util';
 import { baseURL } from './../common/constant';
 
+const styles = {
+  authorItem: {
+    marginBottom: 4,
+  },
+};
+
 class PopularAuthors extends Component {
 
   state={
+    loading: true,
     popularAuthorsData: [],
     start: 0,
   }
@@ -25,18 +31,23 @@ class PopularAuthors extends Component {
     this.getPopularAuthorsData();
   }
 
-  getPopularAuthorsData=() => {
-    const {
-      start,
-    } = this.state;
+  getPopularAuthorsData=(start = 0, popularAuthorsData = []) => {
+    this.setState({
+      loading: true,
+    });
     getRequest(`${baseURL}auth_authors/all?count=10&start=${start}`, (respnseData) => {
       const {
         authors,
       } = respnseData;
       this.setState({
-        popularAuthorsData: authors,
+        loading: false,
+        start: start + 5,
+        popularAuthorsData: popularAuthorsData.concat(authors),
       });
     }, (error) => {
+      this.setState({
+        loading: false,
+      });
       alert(error);
     });
   }
@@ -52,6 +63,7 @@ class PopularAuthors extends Component {
     } = item;
     return (
       <TouchableOpacity
+        style={styles.authorItem}
         onPress={() => {
           const { navigate } = this.props.navigation;
           navigate('AuthorHome', { id, name, resume, large_avatar });
@@ -72,14 +84,30 @@ class PopularAuthors extends Component {
     );
   }
 
+  onRefresh=() => {
+    this.getPopularAuthorsData();
+  }
+
+  onLoadMore=() => {
+    const {
+      start,
+      popularAuthorsData,
+    } = this.state;
+    this.getPopularAuthorsData(start, popularAuthorsData);
+  }
+
   render() {
     const {
+      loading,
       popularAuthorsData,
     } = this.state;
     return (
       <ListView
+        loading={loading}
         data={popularAuthorsData}
         renderRow={this.renderRow}
+        onRefresh={this.onRefresh}
+        onLoadMore={this.onLoadMore}
       />
     );
   }

@@ -1,20 +1,12 @@
 import React, { Component } from 'react';
 import {
-  ScrollView,
-} from 'react-native';
-import {
   Text,
   View,
-  Spinner,
-  Screen,
   ListView,
   Row,
   Image,
   Subtitle,
   Caption,
-  RichMedia,
-  Icon,
-  Button,
   TouchableOpacity,
   Tile,
   Title,
@@ -23,32 +15,47 @@ import {
 import { getRequest } from './../common/util';
 import { baseURL } from './../common/constant';
 
+import NoMore from './../common/NoMore';
+
+const styles = {
+  articleItem: {
+    marginBottom: 6,
+  },
+};
+
 class AuthorHome extends Component {
 
   state={
-    articlesData: [],
     loading: true,
-    max_id: '',
+    articlesData: [],
+    maxId: 0,
+    showNoMore: false,
   }
 
   componentWillMount=() => {
     this.getArticlesData();
   }
 
-  getArticlesData=() => {
+  getArticlesData=(maxId = 0, articlesData = []) => {
+    this.setState({
+      loading: true,
+    });
     const { params = {} } = this.props.navigation.state;
     const id = params.id;
-    const {
-      max_id,
-    } = this.state;
-    getRequest(`${baseURL}author/${id}/posts?count=10&max_id=${max_id}`, (respnseData) => {
+    getRequest(`${baseURL}author/${id}/posts?count=10&max_id=${maxId}`, (responseData = {}) => {
+      const {
+        posts = [],
+      } = responseData;
       this.setState({
         loading: false,
-        articlesData: respnseData.posts,
+        articlesData: articlesData.concat(posts),
+        maxId: posts.length === 10 ? posts[posts.length - 1].id : 0,
+        showNoMore: true,
       });
     }, (error) => {
       this.setState({
         loading: false,
+        showNoMore: true,
       });
       alert(error);
     });
@@ -68,6 +75,7 @@ class AuthorHome extends Component {
     } = item;
     return (
       <TouchableOpacity
+        style={styles.articleItem}
         onPress={() => {
           const { navigate } = this.props.navigation;
           navigate('ArticleDetail', { id });
@@ -107,15 +115,44 @@ class AuthorHome extends Component {
     );
   }
 
+  renderFooter=() => {
+    const {
+      maxId,
+      articlesData,
+      showNoMore,
+    } = this.state;
+    const text = articlesData.length === 0 ? 'Oops！该童鞋暂无文章！' : '别扯了，没有了';
+    return (
+      !maxId && showNoMore ? <NoMore text={text} /> : null
+    );
+  }
+
+  onRefresh=() => {
+    this.getArticlesData();
+  }
+
+  onLoadMore=() => {
+    const {
+      maxId,
+      articlesData,
+    } = this.state;
+    maxId ? this.getArticlesData(maxId, articlesData) : null
+  }
+
   render() {
     const {
       articlesData,
+      loading,
     } = this.state;
     return (
       <ListView
+        loading={loading}
         data={articlesData}
         renderRow={this.renderRow}
         renderHeader={this.renderHeader}
+        renderFooter={this.renderFooter}
+        onRefresh={this.onRefresh}
+        onLoadMore={this.onLoadMore}
       />
     );
   }

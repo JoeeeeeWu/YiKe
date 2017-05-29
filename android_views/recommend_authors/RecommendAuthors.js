@@ -17,6 +17,12 @@ import NoMore from './../common/NoMore';
 import { getRequest } from './../common/util';
 import { baseURL } from './../common/constant';
 
+const styles = {
+  authorItem: {
+    marginBottom: 4,
+  },
+};
+
 class RecommendAuthors extends Component {
 
   state={
@@ -56,6 +62,7 @@ class RecommendAuthors extends Component {
     } = item;
     return (
       <TouchableOpacity
+        style={styles.authorItem}
         onPress={() => {
           const { navigate } = this.props.navigation;
           navigate('AuthorHome', { id, name, resume, large_avatar });

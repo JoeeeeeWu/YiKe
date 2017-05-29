@@ -3,12 +3,10 @@ import { Text } from 'react-native';
 import {
   Icon,
   Button,
-  Examples,
  } from '@shoutem/ui';
 import { StackNavigator, DrawerNavigator, TabNavigator } from 'react-navigation';
 
 import PastArticles from './../past_articles/PastArticles';
-import Authors from './../authors/Authors';
 import Columns from './../columns/Columns';
 import ColumnArticles from './../column_articles/ColumnArticles';
 import NewArticles from './../new_articles/NewArticles';
@@ -46,6 +44,7 @@ const AppStackNav = StackNavigator({
   ArticleDetail: {
     screen: ArticleDetail,
     navigationOptions: ({ navigation }) => ({
+      title: '文章',
       headerRight: <Button
         style={styles.headerRight}
         onPress={() => {
@@ -84,6 +83,13 @@ const AppStackNav = StackNavigator({
 
   ColumnArticles: {
     screen: ColumnArticles,
+    navigationOptions: ({navigation}) => {
+      const { params } = navigation.state;
+      const name = params.name;
+      return {
+        title: `${name}栏目`,
+      };
+    }
   },
 });
 
@@ -159,7 +165,6 @@ const AppNav = DrawerNavigator({
       drawerLabel: '栏目',
     },
   },
-  Examples: { screen: Examples },
 }, {
   drawerWidth: 200,
 });

@@ -9,13 +9,13 @@ const styles = {
     flex: 1,
     flexDirection: 'row',
     justifyContent: 'center',
-    marginVertical: 8,
+    marginVertical: 18,
   },
 };
 
-const NoMore = () => (
+const NoMore = ({ text='别扯了，没有了' }) => (
   <View style={styles.noMore}>
-    <Text>—— 别扯了，没有了 ——</Text>
+    <Text>—— {text} ——</Text>
   </View>
 );
 

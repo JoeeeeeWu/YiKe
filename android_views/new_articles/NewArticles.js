@@ -10,10 +10,11 @@ import {
   TouchableOpacity,
   Caption,
 } from '@shoutem/ui';
-import NoMore from './../common/NoMore';
 
 import { getRequest, getTodayStr } from './../common/util';
 import { baseURL } from './../common/constant';
+
+import NoMore from './../common/NoMore';
 
 const styles = {
   articleItemContainer: {
@@ -33,6 +34,9 @@ class NewArticles extends Component {
   }
 
   getNewArticlesData=() => {
+    this.setState({
+      loading: true,
+    });
     getRequest(`${baseURL}stream/date/${getTodayStr()}`, (respnseData) => {
       const {
         posts,
@@ -98,6 +102,10 @@ class NewArticles extends Component {
     <NoMore />
   )
 
+  onRefresh=() => {
+    this.getNewArticlesData();
+  }
+
   render() {
     const {
       loading,
@@ -110,6 +118,7 @@ class NewArticles extends Component {
           renderRow={this.renderRow}
           renderFooter={this.renderFooter}
           loading={loading}
+          onRefresh={this.onRefresh}
         />
       </Screen>
     );

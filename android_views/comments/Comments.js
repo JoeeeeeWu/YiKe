@@ -2,30 +2,24 @@ import React, { Component } from 'react';
 import {
   Text,
   View,
-  Spinner,
-  Screen,
   ListView,
   Row,
   Image,
   Subtitle,
   Caption,
-  RichMedia,
-  Icon,
-  Button,
 } from '@shoutem/ui';
 
 import { getRequest } from './../common/util';
 import { baseURL } from './../common/constant';
 
+import NoMore from './../common/NoMore';
+
 const styles = {
   commentItem: {
-    marginBottom: 8,
+    marginBottom: 6,
   },
   refCommentItem: {
     backgroundColor: '#eee',
-  },
-  commentHeader: {
-    marginBottom: 8,
   },
 };
 
@@ -34,26 +28,33 @@ class Comments extends Component {
     commentsData: [],
     maxId: 0,
     loading: true,
+    showNoMore: false,
   }
 
   componentWillMount=() => {
     this.getCommentsData();
   }
 
-  getCommentsData=() => {
-    const {
-        maxId,
-    } = this.state;
+  getCommentsData=(maxId = 0, commentsData = []) => {
     const { params } = this.props.navigation.state;
     const id = params.id;
-    getRequest(`${baseURL}post/${id}/comments?count=10&max_id=${maxId}`, (respnseData) => {
+    this.setState({
+      loading: true,
+    });
+    getRequest(`${baseURL}post/${id}/comments?count=10&max_id=${maxId}`, (responseData = {}) => {
+      const {
+        comments: newCommentsData = [],
+      } = responseData;
       this.setState({
         loading: false,
-        commentsData: respnseData.comments,
+        showNoMore: true,
+        commentsData: commentsData.concat(newCommentsData),
+        maxId: newCommentsData.length === 10 ? newCommentsData[newCommentsData.length - 1].id : 0,
       });
     }, (error) => {
       this.setState({
         loading: false,
+        showNoMore: true,
       });
       alert(error);
     });
@@ -102,14 +103,43 @@ class Comments extends Component {
     );
   }
 
+  renderFooter=() => {
+    const {
+      maxId,
+      commentsData,
+      showNoMore,
+    } = this.state;
+    const text = commentsData.length === 0 ? 'Oops！暂无评论' : '别扯了，没有了';
+    return (
+      !maxId && showNoMore ? <NoMore text={text} /> : null
+    );
+  }
+
+  onRefresh=() => {
+    this.getCommentsData();
+  }
+
+  onLoadMore=() => {
+    const {
+      maxId,
+      commentsData,
+    } = this.state;
+    maxId ? this.getCommentsData(maxId, commentsData) : null
+  }
+
   render() {
     const {
         commentsData,
+        loading,
     } = this.state;
     return (
       <ListView
+        loading={loading}
         data={commentsData}
         renderRow={this.renderRow}
+        onRefresh={this.onRefresh}
+        onLoadMore={this.onLoadMore}
+        renderFooter={this.renderFooter}
       />
     );
   }

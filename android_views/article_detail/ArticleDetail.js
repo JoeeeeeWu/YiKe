@@ -18,8 +18,16 @@ class ArticleDetail extends Component {
   render() {
     const { params } = this.props.navigation.state;
     const id = params.id;
+    const jsCode = `
+        var node=document.querySelector('.bs-header');
+        node.style.display='none';
+    `;
     return (
-      <WebView source={{ uri: `https://moment.douban.com/post/${id}` }} />
+      <WebView
+        source={{ uri: `https://moment.douban.com/post/${id}` }}
+        javaScriptEnabled={true}
+        injectedJavaScript={jsCode}
+      />
     );
   }
 }
