@@ -19,7 +19,7 @@ import NoMore from './../common/NoMore';
 
 const styles = {
   articleItem: {
-    marginBottom: 6,
+    marginTop: 6,
   },
 };
 

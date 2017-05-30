@@ -19,7 +19,7 @@ import { baseURL } from './../common/constant';
 
 const styles = {
   articleItem: {
-    marginBottom: 6,
+    marginTop: 6,
   },
 };
 
